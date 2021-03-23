@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://script/enemy.gd" type="Script" id=1]
+
+[node name="enemy" type="Label"]
+margin_left = 110.164
+margin_top = 170.68
+margin_right = 255.164
+margin_bottom = 249.68
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Alive enemy"
+align = 1
+valign = 1
+uppercase = true
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="enemy_hp" type="Label" parent="."]
+margin_left = 10.5002
+margin_top = -26.3298
+margin_right = 118.663
+margin_bottom = -5.9015
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "HP: 10"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]

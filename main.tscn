@@ -4,20 +4,32 @@
 [ext_resource path="res://sprite/at_but_1.png" type="Texture" id=2]
 [ext_resource path="res://sprite/at_but_pressed.png" type="Texture" id=3]
 [ext_resource path="res://script/TouchScreenButton.gd" type="Script" id=4]
-[ext_resource path="res://script/enemy.gd" type="Script" id=5]
+[ext_resource path="res://scenes/enemy.tscn" type="PackedScene" id=5]
 
 [sub_resource type="GDScript" id=1]
-script/source = "extends Label
+script/source = "extends Node2D
 
-func _process(delta):
-	text = \"Score: \" + str(G.score)
+export (PackedScene) var Enemy
+
+var enemy = null
+
+func _ready():
+	$enemy.connect('enemy_dead', self,\"_on_enemy_enemy_dead\")
+
+func _on_enemy_enemy_dead():
+	print('enemy dead')
+	$Timer.start()
 
 
 func _on_Timer_timeout():
-	G.score += G.war_dmg
+	print('enemy spawn start...')
+	$enemy.hp = 10 + G.score * G.score
+	$enemy.show()
 "
 
 [node name="Node2D" type="Node2D"]
+script = SubResource( 1 )
+Enemy = ExtResource( 5 )
 
 [node name="screen" type="Sprite" parent="."]
 position = Vector2( 199.189, 286.875 )
@@ -30,37 +42,15 @@ normal = ExtResource( 2 )
 pressed = ExtResource( 3 )
 script = ExtResource( 4 )
 
-[node name="enemy" type="Label" parent="."]
-margin_left = 122.878
-margin_top = 174.918
-margin_right = 267.878
-margin_bottom = 253.918
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = "Alive enemy"
-align = 1
-valign = 1
-uppercase = true
-script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
 
-[node name="score" type="Label" parent="."]
-margin_left = 16.8369
-margin_top = 23.5717
-margin_right = 125.0
-margin_bottom = 44.0
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-text = "score"
-align = 1
-valign = 1
-script = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="enemyPosition" type="Position2D" parent="."]
+position = Vector2( 124, 186 )
 
-[node name="Timer" type="Timer" parent="score"]
-autostart = true
+[node name="enemy" parent="." instance=ExtResource( 5 )]
 [connection signal="pressed" from="screen/TouchScreenButton" to="screen/TouchScreenButton" method="_on_TouchScreenButton_pressed"]
+[connection signal="pressed" from="screen/TouchScreenButton" to="enemy" method="_on_TouchScreenButton_pressed"]
 [connection signal="released" from="screen/TouchScreenButton" to="screen/TouchScreenButton" method="_on_TouchScreenButton_released"]
-[connection signal="timeout" from="score/Timer" to="score" method="_on_Timer_timeout"]
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
